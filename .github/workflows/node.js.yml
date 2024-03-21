@@ -9,6 +9,16 @@ on:
   pull_request:
     branches: [ "main" ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+# 设置权限（文件是可以被读写修改的）
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+
 jobs:
   build:
 
