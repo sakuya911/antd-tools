@@ -5,7 +5,7 @@ interface Props {
     node: ParseAST
 }
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 /** 生成标题 */
 function Heading({ node }: Props) {
@@ -36,7 +36,15 @@ function ParagraphContent({ node }: Props) {
     }
     return (
         <>
-            {node.content}
+            {node.children!.map(item => {
+                if (item.type === ParserNodeType.Text) {
+                    return <span key={item.content}>{item.content}</span>
+                }
+
+                if (item.type === ParserNodeType.Bold) {
+                    return <Text strong key={item.content}>{item.content}</Text>
+                }
+            })}
         </>
     );
 }

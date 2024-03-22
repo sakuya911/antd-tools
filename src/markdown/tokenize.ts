@@ -2,7 +2,7 @@
  * @file
  * 主要负责分词操作
  */
-import type { TitleLevel, Token } from "./type";
+import type { BoldToken, TitleLevel, Token } from "./type";
 import { MarkdownElement } from "./const";
 
 export function tokenize(markdownText: string) {
@@ -13,39 +13,62 @@ export function tokenize(markdownText: string) {
     const tokens: Token[] = [];
     // 遍历每一行
     for (const line of lines) {
+        const trimLine = line.trim();
         // 判断是那种 Markdown 元素
         // 判断是否是标题
-        if (line.match(/^\s*#{1,6}\s+/)) {
+        if (trimLine.match(/^\s*#{1,6}\s+/)) {
             // 获取标题的级别
-            const level = (line.match(/^\s*#{1,5}\s+/)?.[0].trim().length || 5) as TitleLevel;
+            const level = (trimLine.match(/^\s*#{1,5}\s+/)?.[0].trim().length || 5) as TitleLevel;
             // 创建标题的 token
             tokens.push({
                 type: MarkdownElement.Heading,
                 level: level,
-                content: line.replace(/^\s*#{1,6}\s+/, '').trim()
+                content: trimLine.replace(/^\s*#{1,6}\s+/, '').trim()
             });
-        } else if (line.match(/^\s*[-+*]\s+/)) {
+        } else if (trimLine.match(/^\s*[-+*]\s+/)) {
             // 创建无序列表的 token
             tokens.push({
                 type: MarkdownElement.ListItem,
-                content: line.replace(/^\s*[-+*]\s+/, '').trim(),
+                content: trimLine.replace(/^\s*[-+*]\s+/, '').trim(),
                 isOrdered: false,
+                bold: matchBlockText(trimLine)
             });
-        } else if (line.match(/^\s*\d+\.\s+/)) {
+        } else if (trimLine.match(/^\s*\d+\.\s+/)) {
             // 创建有序列表的 token
             tokens.push({
                 type: MarkdownElement.ListItem,
-                content: line.replace(/^\d+\./, '').trim(),
+                content: trimLine.replace(/^\d+\./, '').trim(),
                 isOrdered: true,
+                bold: matchBlockText(trimLine)
             });
-        } else if (line.trim() !== '') {
+        } else if (trimLine !== '') {
             // 如果该行不是空行，则视为段落
             tokens.push({
                 type: MarkdownElement.Paragraph,
-                content: line.trim()
+                content: trimLine,
+                bold: matchBlockText(trimLine)
             });
         }
     }
 
     return tokens;
+}
+
+/** 匹配加粗格式 */
+function matchBlockText(text: string) {
+    const list: BoldToken[] = [];
+    const boldRegex = /\*\*(.*?)\*\*|__(.*?)__/g;  
+    const matchs = text.matchAll(boldRegex);
+
+    for (const match of matchs) {
+        // 0位是完整匹配项，1/2位是内容
+        // 由于我们使用了|来分隔两个模式，所以只有一个捕获组会有内容
+        list.push({
+            type: MarkdownElement.Bold,
+            content: match[1] || match[2],
+            match: match[0]
+        });
+    }
+
+    return list;
 }

@@ -10,12 +10,12 @@ export enum ParserNodeType {
     OrderedList = 'orderedList',
     UnorderedList = 'unordered-list',
     ListItem = 'listItem',
+    Bold = 'bold',
+    Text = 'text',
     // BulletList = 'bulletList',
     // CodeBlock = 'codeBlock',
     // ThematicBreak = 'thematicBreak',
-    // HTMLBlock = 'htmlBlock',
     // HTMLSpan = 'htmlSpan',
-    // Text = 'text',
 }
 
 export interface ParseAST {
@@ -49,12 +49,9 @@ export function parse(tokens: Token[]) {
                 });
                 break;
             case MarkdownElement.Paragraph:
+                // 段落处理
                 currentList = null;
-                // 标题和段落实际处理一致
-                ast.children!.push({
-                    type: ParserNodeType.Paragraph,
-                    content: token.content,
-                });
+                ast.children!.push(parseParagraph(token));
                 break;
             case MarkdownElement.ListItem:
                 // 当遇到列表的时候，需要创建列表的父元素
@@ -79,4 +76,33 @@ export function parse(tokens: Token[]) {
     });
 
     return ast;
+}
+
+function parseParagraph(token: Token) {
+    const result: ParseAST = {
+        type: ParserNodeType.Paragraph,
+        content: token.content,
+        children: []
+    }
+
+    if (token.bold?.length) {
+        let content = token.content;
+        token.bold.forEach((item) => {
+            const index = content.indexOf(item.match);
+
+            if (index > 0) {
+                result.children?.push({
+                    type: ParserNodeType.Text,
+                    content: content.slice(0, index)
+                })
+            }
+            
+            result.children?.push({
+                type: ParserNodeType.Bold,
+                content: item.content
+            })
+            content = content.slice(index + item.match.length);
+        })
+    }
+    return result;
 }
