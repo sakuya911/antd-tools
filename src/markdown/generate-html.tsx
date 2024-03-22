@@ -20,8 +20,8 @@ function ListItem({ node }: Props) {
             <>
                 {
                     node.ordered
-                        ? <ol>{ child }</ol>
-                        : <ul>{ child }</ul>
+                        ? <ol>{child}</ol>
+                        : <ul>{child}</ul>
                 }
             </>
         )
@@ -36,15 +36,19 @@ function ParagraphContent({ node }: Props) {
     }
     return (
         <>
-            {node.children!.map(item => {
-                if (item.type === ParserNodeType.Text) {
-                    return <span key={item.content}>{item.content}</span>
-                }
+            {
+                node.children!.length > 0
+                    ? node.children!.map(item => {
+                        if (item.type === ParserNodeType.Text) {
+                            return <span key={item.content}>{item.content}</span>
+                        }
 
-                if (item.type === ParserNodeType.Bold) {
-                    return <Text strong key={item.content}>{item.content}</Text>
-                }
-            })}
+                        if (item.type === ParserNodeType.Bold) {
+                            return <Text strong key={item.content}>{item.content}</Text>
+                        }
+                    })
+                    : node.content
+            }
         </>
     );
 }

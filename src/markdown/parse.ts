@@ -102,7 +102,16 @@ function parseParagraph(token: Token) {
                 content: item.content
             })
             content = content.slice(index + item.match.length);
+            console.info('parseParagraph', content);
         })
+
+        // 如果最终还有剩余的文字，则直接加进去
+        if (content) {
+            result.children?.push({
+                type: ParserNodeType.Text,
+                content: content
+            })
+        }
     }
     return result;
 }
