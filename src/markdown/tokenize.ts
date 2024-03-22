@@ -2,7 +2,7 @@
  * @file
  * 主要负责分词操作
  */
-import type { Token } from "./type";
+import type { TitleLevel, Token } from "./type";
 import { MarkdownElement } from "./const";
 
 export function tokenize(markdownText: string) {
@@ -17,7 +17,7 @@ export function tokenize(markdownText: string) {
         // 判断是否是标题
         if (line.match(/^\s*#{1,6}\s+/)) {
             // 获取标题的级别
-            const level = line.match(/^\s*#{1,6}\s+/)?.[0].trim().length || 0;
+            const level = (line.match(/^\s*#{1,5}\s+/)?.[0].trim().length || 5) as TitleLevel;
             // 创建标题的 token
             tokens.push({
                 type: MarkdownElement.Heading,

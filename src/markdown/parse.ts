@@ -1,6 +1,6 @@
 // 该文件根据传入的 tokens 列表生成抽象语法树
 
-import { Token } from './type';
+import { TitleLevel, Token } from './type';
 import { MarkdownElement } from './const';
 
 export enum ParserNodeType {
@@ -23,7 +23,7 @@ export interface ParseAST {
     children?: ParseAST[];
     content?: string;
     ordered?: boolean;
-    level?: 1 | 2 | 3 | 4 | 5 | undefined;
+    level?: TitleLevel;
 }
 
 export function parse(tokens: Token[]) {
