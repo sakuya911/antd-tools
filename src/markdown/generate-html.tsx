@@ -1,17 +1,15 @@
-import React from 'react';
 import { ParserNodeType, type ParseAST } from './parse';
+import { Typography } from 'antd';
 
 interface Props {
     node: ParseAST
 }
 
+const { Title, Paragraph } = Typography;
+
 /** 生成标题 */
 function Heading({ node }: Props) {
-    return React.createElement(
-        `h${node.level}`,
-        null,
-        node.content
-    );
+    return <Title level={node.level}>{node.content}</Title>
 }
 
 /** 生成列表 */
@@ -32,13 +30,13 @@ function ListItem({ node }: Props) {
 }
 
 /** 生成段落 */
-function Paragraph({ node }: Props) {
+function ParagraphContent({ node }: Props) {
     if (!node.content) {
-        return <></>;
+        return null;
     }
     return (
         <>
-            <div>{node.content}</div>
+            {node.content}
         </>
     );
 }
@@ -57,9 +55,9 @@ export function GenerateHtml({ node }: Props) {
             return <Heading node={node} />;
         case ParserNodeType.OrderedList:
         case ParserNodeType.UnorderedList:
-            return <ListItem node={node} />;
+            return <Paragraph><ListItem node={node} /></Paragraph>;
         case ParserNodeType.Paragraph:
-            return <Paragraph node={node} />;
+            return <Paragraph><ParagraphContent node={node} /></Paragraph>;
         default:
             return null;
     }

@@ -23,7 +23,7 @@ export interface ParseAST {
     children?: ParseAST[];
     content?: string;
     ordered?: boolean;
-    level?: number;
+    level?: 1 | 2 | 3 | 4 | 5 | undefined;
 }
 
 export function parse(tokens: Token[]) {

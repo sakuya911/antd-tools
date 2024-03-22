@@ -14,7 +14,7 @@ interface ListItemToken {
 interface HeadingToken {
     type: MarkdownElement.Heading;
     content: string;
-    level: number
+    level: 1 | 2 | 3 | 4 | 5 | undefined;
 }
 
 export type Token = NormalToken | ListItemToken | HeadingToken;
