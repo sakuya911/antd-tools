@@ -21,14 +21,16 @@ export interface InlineCodeToken {
     match: string;
 }
 
+export type InlineToken = BoldToken | ItalicToken | InlineCodeToken;
+
 // 额外的格式
 interface ExtraToken {
     /** 加粗 */
-    bold?: BoldToken[];
+    bold?: InlineToken[];
     /** 斜体 */
-    italic?: string[];
+    italic?: InlineToken[];
     /** 行内代码 */
-    inlineCode?: string[];
+    inlineCode?: InlineToken[];
 }
 
 interface ParagraphToken extends ExtraToken {

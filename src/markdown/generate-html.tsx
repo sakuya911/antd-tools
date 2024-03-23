@@ -15,7 +15,7 @@ function Heading({ node }: Props) {
 /** 生成列表 */
 function ListItem({ node }: Props) {
     if (node.type !== ParserNodeType.ListItem) {
-        const child = node.children?.map(item => <ListItem node={item} />)
+        const child = node.children?.map((item, index) => <ListItem key={index} node={item} />)
         return (
             <>
                 {
@@ -34,19 +34,30 @@ function ParagraphContent({ node }: Props) {
     if (!node.content) {
         return null;
     }
+
+    function getContent(item: ParseAST, index: number) {
+        const content = item.content;
+
+        if (!content) {
+            return null;
+        }
+        if (item.type === ParserNodeType.Text) {
+            return <span key={index}>{content}</span>
+        }
+
+        return <Text
+                key={index}
+                strong={item.type === ParserNodeType.Bold}
+                italic={item.type === ParserNodeType.Italic}
+                code={item.type === ParserNodeType.InlineCode} >
+                    {content}
+                </Text>
+    }
     return (
         <>
             {
                 node.children!.length > 0
-                    ? node.children!.map(item => {
-                        if (item.type === ParserNodeType.Text) {
-                            return <span key={item.content}>{item.content}</span>
-                        }
-
-                        if (item.type === ParserNodeType.Bold) {
-                            return <Text strong key={item.content}>{item.content}</Text>
-                        }
-                    })
+                    ? node.children!.map(getContent)
                     : node.content
             }
         </>

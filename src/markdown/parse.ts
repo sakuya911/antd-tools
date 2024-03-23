@@ -1,6 +1,6 @@
 // 该文件根据传入的 tokens 列表生成抽象语法树
 
-import { TitleLevel, Token } from './type';
+import type { InlineToken, TitleLevel, Token } from './type';
 import { MarkdownElement } from './const';
 
 export enum ParserNodeType {
@@ -12,6 +12,8 @@ export enum ParserNodeType {
     ListItem = 'listItem',
     Bold = 'bold',
     Text = 'text',
+    Italic = 'italic',
+    InlineCode = 'inlineCode',
     // BulletList = 'bulletList',
     // CodeBlock = 'codeBlock',
     // ThematicBreak = 'thematicBreak',
@@ -60,8 +62,8 @@ export function parse(tokens: Token[]) {
                         type: token.isOrdered ? ParserNodeType.OrderedList : ParserNodeType.UnorderedList,
                         children: [],
                         ordered: token.isOrdered
-                     };
-                     ast.children?.push(currentList)
+                    };
+                    ast.children?.push(currentList)
                 }
 
                 // 接下来将当前的列表推入到列表数组中
@@ -75,43 +77,77 @@ export function parse(tokens: Token[]) {
         }
     });
 
+    console.log('parse', ast);
+
     return ast;
 }
 
+/** 解析段落 */
 function parseParagraph(token: Token) {
     const result: ParseAST = {
         type: ParserNodeType.Paragraph,
         content: token.content,
-        children: []
+        children: [{
+            type: ParserNodeType.Text,
+            content: token.content
+        }]
     }
 
     if (token.bold?.length) {
-        let content = token.content;
-        token.bold.forEach((item) => {
+        result.children = splitToAST(result.children!, token.bold, ParserNodeType.Bold);
+    }
+
+    if (token.italic?.length) {
+        result.children = splitToAST(result.children!, token.italic, ParserNodeType.Italic);
+    }
+
+    return result;
+}
+
+function splitToAST(rootChildren: ParseAST[], tokenList: InlineToken[], type: ParserNodeType) {
+    const result: ParseAST[] = [];
+    rootChildren.forEach(childText => {
+        // 已经处理过的数据直接放入数组
+        if (childText.type !== ParserNodeType.Text) {
+            result.push(childText);
+            return;
+        }
+        let content = childText.content ?? '';
+        tokenList.forEach(item => {
+
+            // 匹配Text类型的数据
             const index = content.indexOf(item.match);
 
+            // 未匹配上
+            if (index === -1) {
+                return;
+            }
+
+            // 开头未匹配上，不管了，直接进去
             if (index > 0) {
-                result.children?.push({
+                result.push({
                     type: ParserNodeType.Text,
                     content: content.slice(0, index)
                 })
             }
-            
-            result.children?.push({
-                type: ParserNodeType.Bold,
+
+            // 将匹配上的数据放入数组
+            result.push({
+                type,
                 content: item.content
             })
-            content = content.slice(index + item.match.length);
-            console.info('parseParagraph', content);
-        })
 
-        // 如果最终还有剩余的文字，则直接加进去
+            // 切掉之前匹配上的数据，重新走流程
+            content = content.slice(index + item.match.length);
+        });
+
+        // 如果最终还有剩余的文字（未匹配上），则直接加进去
         if (content) {
-            result.children?.push({
+            result.push({
                 type: ParserNodeType.Text,
                 content: content
             })
         }
-    }
+    });
     return result;
 }
