@@ -49,7 +49,8 @@ function ParagraphContent({ node }: Props) {
                 key={index}
                 strong={item.type === ParserNodeType.Bold}
                 italic={item.type === ParserNodeType.Italic}
-                code={item.type === ParserNodeType.InlineCode} >
+                code={item.type === ParserNodeType.InlineCode}
+                delete={item.type === ParserNodeType.Delete}>
                     {content}
                 </Text>
     }
@@ -64,7 +65,7 @@ function ParagraphContent({ node }: Props) {
     );
 }
 
-export function GenerateHtml({ node }: Props) {
+export default function GenerateHtml({ node }: Props) {
     if (node.type === ParserNodeType.Root) {
         return (
             <>

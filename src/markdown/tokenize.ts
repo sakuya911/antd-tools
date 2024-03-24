@@ -3,7 +3,7 @@
  * 主要负责分词操作
  */
 import type { InlineToken, TitleLevel, Token } from "./type";
-import { MarkdownElement } from "./const";
+import { MarkdownElement, markdownRegex } from "./const";
 
 export function tokenize(markdownText: string) {
     // 将获取到的markdown文本按照行来分割
@@ -16,41 +16,49 @@ export function tokenize(markdownText: string) {
         const trimLine = line.trim();
         // 判断是那种 Markdown 元素
         // 判断是否是标题
-        if (trimLine.match(/^\s*#{1,6}\s+/)) {
+        if (trimLine.match(markdownRegex.heading)) {
             // 获取标题的级别
-            const level = (trimLine.match(/^\s*#{1,5}\s+/)?.[0].trim().length || 5) as TitleLevel;
+            const level = (trimLine.match(markdownRegex.heading)?.[0].trim().length || 5) as TitleLevel;
             // 创建标题的 token
             tokens.push({
                 type: MarkdownElement.Heading,
                 level: level,
-                content: trimLine.replace(/^\s*#{1,6}\s+/, '').trim(),
+                content: trimLine.replace(markdownRegex.heading, '').trim(),
                 italic: matchItalicText(trimLine),
+                delete: matchDeleteText(trimLine),
+                inlineCode: matchInlineCodeText(trimLine),
             });
-        } else if (trimLine.match(/^\s*[-+*]\s+/)) {
+        } else if (trimLine.match(markdownRegex.unorderedList)) {
             // 创建无序列表的 token
             tokens.push({
                 type: MarkdownElement.ListItem,
-                content: trimLine.replace(/^\s*[-+*]\s+/, '').trim(),
+                content: trimLine.replace(markdownRegex.unorderedList, '').trim(),
                 isOrdered: false,
-                bold: matchBlockText(trimLine),
+                bold: matchBoldText(trimLine),
                 italic: matchItalicText(trimLine),
+                delete: matchDeleteText(trimLine),
+                inlineCode: matchInlineCodeText(trimLine),
             });
-        } else if (trimLine.match(/^\s*\d+\.\s+/)) {
+        } else if (trimLine.match(markdownRegex.orderedList)) {
             // 创建有序列表的 token
             tokens.push({
                 type: MarkdownElement.ListItem,
-                content: trimLine.replace(/^\d+\./, '').trim(),
+                content: trimLine.replace(markdownRegex.orderedList, '').trim(),
                 isOrdered: true,
-                bold: matchBlockText(trimLine),
+                bold: matchBoldText(trimLine),
                 italic: matchItalicText(trimLine),
+                delete: matchDeleteText(trimLine),
+                inlineCode: matchInlineCodeText(trimLine),
             });
         } else if (trimLine !== '') {
             // 如果该行不是空行，则视为段落
             tokens.push({
                 type: MarkdownElement.Paragraph,
                 content: trimLine,
-                bold: matchBlockText(trimLine),
+                bold: matchBoldText(trimLine),
                 italic: matchItalicText(trimLine),
+                delete: matchDeleteText(trimLine),
+                inlineCode: matchInlineCodeText(trimLine),
             });
         }
     }
@@ -59,15 +67,23 @@ export function tokenize(markdownText: string) {
 }
 
 /** 匹配加粗格式 */
-function matchBlockText(text: string) {
-    const boldRegex = /\*\*(.*?)\*\*|__(.*?)__/g;
-    return matchText(text, boldRegex, MarkdownElement.Bold);
+function matchBoldText(text: string) {
+    return matchText(text, markdownRegex.bold, MarkdownElement.Bold);
 }
 
-/** 匹配加粗格式 */
+/** 匹配斜体格式 */
 function matchItalicText(text: string) {
-    const boldRegex = /\*(.*?)\*|_(.*?)_/g;
-    return matchText(text, boldRegex, MarkdownElement.Italic);
+    return matchText(text, markdownRegex.italic, MarkdownElement.Italic);
+}
+
+/** 匹配删除线格式 */
+function matchDeleteText(text: string) {
+    return matchText(text, markdownRegex.delete, MarkdownElement.Delete);
+}
+
+/** 匹配行内代码格式 */
+function matchInlineCodeText(text: string) {
+    return matchText(text, markdownRegex.inlineCode, MarkdownElement.InlineCode);
 }
 
 function matchText(text: string, regex: RegExp, type: InlineToken['type']) {

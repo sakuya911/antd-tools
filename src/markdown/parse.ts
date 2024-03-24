@@ -8,12 +8,13 @@ export enum ParserNodeType {
     Heading = 'heading',
     Paragraph = 'paragraph',
     OrderedList = 'orderedList',
-    UnorderedList = 'unordered-list',
+    UnorderedList = 'unorderedList',
     ListItem = 'listItem',
     Bold = 'bold',
     Text = 'text',
     Italic = 'italic',
     InlineCode = 'inlineCode',
+    Delete = 'delete',
     // BulletList = 'bulletList',
     // CodeBlock = 'codeBlock',
     // ThematicBreak = 'thematicBreak',
@@ -93,8 +94,16 @@ function parseParagraph(token: Token) {
         }]
     }
 
+    if (token.inlineCode?.length) {
+        result.children = splitToAST(result.children!, token.inlineCode, ParserNodeType.InlineCode);
+    }
+
     if (token.bold?.length) {
         result.children = splitToAST(result.children!, token.bold, ParserNodeType.Bold);
+    }
+
+    if (token.delete?.length) {
+        result.children = splitToAST(result.children!, token.delete, ParserNodeType.Delete);
     }
 
     if (token.italic?.length) {

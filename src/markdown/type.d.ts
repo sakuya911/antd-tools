@@ -3,25 +3,27 @@ import { MarkdownElement } from './const'
 // 标题等级类型
 export type TitleLevel =  1 | 2 | 3 | 4 | 5 | undefined;
 
-export interface BoldToken {
+interface ExtraTokenBase {
+    content: string;
+    match: string;
+}
+
+interface BoldToken extends ExtraTokenBase {
     type: MarkdownElement.Bold;
-    content: string;
-    match: string;
 }
 
-export interface ItalicToken {
+interface ItalicToken extends ExtraTokenBase {
     type: MarkdownElement.Italic;
-    content: string;
-    match: string;
 }
-
-export interface InlineCodeToken {
+interface InlineCodeToken extends ExtraTokenBase {
     type: MarkdownElement.InlineCode;
-    content: string;
-    match: string;
 }
 
-export type InlineToken = BoldToken | ItalicToken | InlineCodeToken;
+interface DeleteToken extends ExtraTokenBase {
+    type: MarkdownElement.Delete;
+}
+
+export type InlineToken = BoldToken | ItalicToken | InlineCodeToken | DeleteToken;
 
 // 额外的格式
 interface ExtraToken {
@@ -31,6 +33,8 @@ interface ExtraToken {
     italic?: InlineToken[];
     /** 行内代码 */
     inlineCode?: InlineToken[];
+    /** 删除线 */
+    delete?: InlineToken[];
 }
 
 interface ParagraphToken extends ExtraToken {

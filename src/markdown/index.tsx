@@ -1,6 +1,6 @@
 import { tokenize } from "./tokenize";
 import { parse } from './parse';
-import { GenerateHtml } from './generate-html';
+import GenerateHtml from './generate-html';
 import { Input, Typography } from 'antd';
 import { useState } from "react";
 import MarkdownBg from './img/markdown.jpg';
@@ -12,7 +12,7 @@ const textDemo = `
 
 这是**一个**段落，**这是一个加粗字体**，这也是__加粗的方式__
 
-* 无序列表项 1
+- 无序列表项 1
 - 无序列表项 2
 - 无序列表项 3
 
@@ -22,15 +22,16 @@ const textDemo = `
 2. 有序列表项 2
 3. 有序列表项 3
 
+这是第~~三个~~段落，~~这是一个删除线~~
+
+这是第\`四个\`段落，\`const inlineCode = "这是一个行内代码";\`
+
 `;
 
 function MarkdownInput({ onChange, defaultValue }: {
     onChange: (value: string) => void;
     defaultValue?: string
 }) {
-    function handleChangeText(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        onChange(e.target.value);
-    }
     return (
         <>
             <div className="h-full">
@@ -38,7 +39,9 @@ function MarkdownInput({ onChange, defaultValue }: {
                     defaultValue={defaultValue}
                     placeholder="Write markdown"
                     style={{ height: '100%', resize: 'none', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
-                    onChange={handleChangeText} />
+                    onChange={e => {
+                        onChange(e.target.value);
+                    }} />
             </div>
         </>
     )
