@@ -37,21 +37,31 @@ interface ExtraToken {
     delete?: InlineToken[];
 }
 
+/** 段落 */
 interface ParagraphToken extends ExtraToken {
     type: MarkdownElement.Paragraph;
     content: string;
 }
 
-interface ListItemToken extends ExtraToken {
+/** 列表 */
+interface ListItemToken extends ParagraphToken {
     type: MarkdownElement.ListItem;
-    content: string;
     isOrdered: boolean;
 }
 
-interface HeadingToken extends ExtraToken {
+/** 标题 */
+interface HeadingToken extends ParagraphToken {
     type: MarkdownElement.Heading;
-    content: string;
     level: TitleLevel;
 }
 
-export type Token = ParagraphToken | ListItemToken | HeadingToken;
+/** 引用块 */
+interface BlockquoteToken extends ParagraphToken {
+    type: MarkdownElement.Blockquote;
+}
+
+interface HorizontalRuleToken {
+    type: MarkdownElement.HorizontalRule;
+}
+
+export type Token = ParagraphToken | ListItemToken | HeadingToken | BlockquoteToken | HorizontalRuleToken;

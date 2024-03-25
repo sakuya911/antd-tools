@@ -16,15 +16,27 @@ const textDemo = `
 - 无序列表项 2
 - 无序列表项 3
 
+---
+
 这是第*二个*段落，*这是一个斜体*，这也是_斜体_的写法
 
 1. 有序列表项 1
 2. 有序列表项 2
 3. 有序列表项 3
 
+---
+
 这是第~~三个~~段落，~~这是一个删除线~~
 
 这是第\`四个\`段落，\`const inlineCode = "这是一个行内代码";\`
+
+> 段**落**1
+> 段落2
+> 段\`落\`3
+
+这是第五个段落
+
+> 这是第二段引用
 
 `;
 
@@ -38,7 +50,7 @@ function MarkdownInput({ onChange, defaultValue }: {
                 <TextArea
                     defaultValue={defaultValue}
                     placeholder="Write markdown"
-                    style={{ height: '100%', resize: 'none', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+                    style={{ height: '100%', resize: 'none', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
                     onChange={e => {
                         onChange(e.target.value);
                     }} />
@@ -71,7 +83,7 @@ export default function MarkdownToHtml() {
                 </div>
                 <Typography className="w-full p-2 text-left border
                 border-stone-300 border-solid rounded"
-                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
                     <GenerateHtml node={ast} />
                 </Typography>
             </div>

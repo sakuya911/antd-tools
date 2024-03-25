@@ -1,6 +1,6 @@
 // 该文件根据传入的 tokens 列表生成抽象语法树
 
-import type { InlineToken, TitleLevel, Token } from './type';
+import type { InlineToken, ParagraphToken, TitleLevel, Token } from './type';
 import { MarkdownElement } from './const';
 
 export enum ParserNodeType {
@@ -15,10 +15,8 @@ export enum ParserNodeType {
     Italic = 'italic',
     InlineCode = 'inlineCode',
     Delete = 'delete',
-    // BulletList = 'bulletList',
-    // CodeBlock = 'codeBlock',
-    // ThematicBreak = 'thematicBreak',
-    // HTMLSpan = 'htmlSpan',
+    HorizontalRule = 'horizontalRule',
+    Blockquote = 'blockquote',
 }
 
 export interface ParseAST {
@@ -42,6 +40,12 @@ export function parse(tokens: Token[]) {
     // 遍历所有的token
     tokens.forEach((token) => {
         switch (token.type) {
+            case MarkdownElement.HorizontalRule:
+                currentList = null;
+                ast.children!.push({
+                    type: ParserNodeType.HorizontalRule,
+                });
+                break;
             case MarkdownElement.Heading:
                 currentList = null;
                 // 标题和段落实际处理一致
@@ -58,7 +62,7 @@ export function parse(tokens: Token[]) {
                 break;
             case MarkdownElement.ListItem:
                 // 当遇到列表的时候，需要创建列表的父元素
-                if (!currentList) {
+                if (!currentList || Object.prototype.hasOwnProperty.call(currentList, 'ordered')) {
                     currentList = {
                         type: token.isOrdered ? ParserNodeType.OrderedList : ParserNodeType.UnorderedList,
                         children: [],
@@ -73,6 +77,20 @@ export function parse(tokens: Token[]) {
                     content: token.content
                 });
                 break;
+            case MarkdownElement.Blockquote:
+                // 引用块
+                if (!currentList || currentList.type !== ParserNodeType.Blockquote) {
+                    currentList = {
+                        type: ParserNodeType.Blockquote,
+                        children: [],
+                    };
+                    ast.children!.push(currentList);
+                }
+                currentList.children!.push(parseParagraph({
+                    ...token,
+                    type: MarkdownElement.Paragraph,
+                }));
+                break;
             default:
                 break;
         }
@@ -84,10 +102,10 @@ export function parse(tokens: Token[]) {
 }
 
 /** 解析段落 */
-function parseParagraph(token: Token) {
+function parseParagraph<T extends ParagraphToken>(token: T, type: ParserNodeType = ParserNodeType.Paragraph) {
     const result: ParseAST = {
-        type: ParserNodeType.Paragraph,
-        content: token.content,
+        type,
+        content: token.content ?? '',
         children: [{
             type: ParserNodeType.Text,
             content: token.content

@@ -1,5 +1,5 @@
 import { ParserNodeType, type ParseAST } from './parse';
-import { Typography } from 'antd';
+import { Typography, Divider, Alert } from 'antd';
 
 interface Props {
     node: ParseAST
@@ -27,6 +27,17 @@ function ListItem({ node }: Props) {
         )
     }
     return <li>{node.content}</li>;
+}
+
+/** 引用段落显示 */
+function Blockquote({ node }: Props) {
+    const message = node.children?.map((item, index) => (
+        <>
+            <ParagraphContent key={index} node={item} />
+            { index === node.children!.length - 1 ? null : <br />}
+        </>
+    ));
+    return <Alert message={message} type="info" />
 }
 
 /** 生成段落 */
@@ -82,6 +93,10 @@ export default function GenerateHtml({ node }: Props) {
             return <Paragraph><ListItem node={node} /></Paragraph>;
         case ParserNodeType.Paragraph:
             return <Paragraph><ParagraphContent node={node} /></Paragraph>;
+        case ParserNodeType.HorizontalRule:
+            return <Divider style={{ borderBlockStart: '1px solid rgba(5, 5, 5, 0.3)' }}/>
+        case ParserNodeType.Blockquote:
+            return <Blockquote node={node} />;
         default:
             return null;
     }

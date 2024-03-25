@@ -50,6 +50,22 @@ export function tokenize(markdownText: string) {
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
             });
+        } else if (trimLine.match(markdownRegex.horizontalRule)) {
+            // 分割线
+            tokens.push({
+                type: MarkdownElement.HorizontalRule
+            });
+        } else if (trimLine.match(markdownRegex.blockquote)) {
+            const replace = trimLine.replace('> ', '');
+            // 分割线
+            tokens.push({
+                type: MarkdownElement.Blockquote,
+                content: replace,
+                bold: matchBoldText(trimLine),
+                italic: matchItalicText(trimLine),
+                delete: matchDeleteText(trimLine),
+                inlineCode: matchInlineCodeText(trimLine),
+            });
         } else if (trimLine !== '') {
             // 如果该行不是空行，则视为段落
             tokens.push({
