@@ -2,7 +2,8 @@ import { ParserNodeType, type ParseAST } from './parse';
 import { Typography, Divider, Alert } from 'antd';
 
 interface Props {
-    node: ParseAST
+    node: ParseAST;
+    key?: number | string;
 }
 
 const { Title, Paragraph, Text } = Typography;
@@ -37,11 +38,11 @@ function Blockquote({ node }: Props) {
             { index === node.children!.length - 1 ? null : <br />}
         </>
     ));
-    return <Alert message={message} type="info" />
+    return <Alert key="info" message={message} type="info" />
 }
 
 /** 生成段落 */
-function ParagraphContent({ node }: Props) {
+function ParagraphContent({ node, key }: Props) {
     if (!node.content) {
         return null;
     }
@@ -70,7 +71,7 @@ function ParagraphContent({ node }: Props) {
             {
                 node.children!.length > 0
                     ? node.children!.map(getContent)
-                    : node.content
+                    : <span key={key}>{node.content}</span>
             }
         </>
     );

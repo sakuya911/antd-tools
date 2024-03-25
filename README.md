@@ -21,7 +21,7 @@ demo查看：https://staticmain.github.io/antd-tools/
 - [ ] 段落 - 链接
 - [ ] 解决段落多格式的优先级冲突问题
 - [x] 分割线
-- [ ] 引用
+- [x] 引用
 - [ ] 图片
 - [ ] 任务列表
 - [ ] 代码段

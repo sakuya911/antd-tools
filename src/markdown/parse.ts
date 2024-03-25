@@ -62,7 +62,7 @@ export function parse(tokens: Token[]) {
                 break;
             case MarkdownElement.ListItem:
                 // 当遇到列表的时候，需要创建列表的父元素
-                if (!currentList || Object.prototype.hasOwnProperty.call(currentList, 'ordered')) {
+                if (!currentList || !Object.prototype.hasOwnProperty.call(currentList, 'ordered')) {
                     currentList = {
                         type: token.isOrdered ? ParserNodeType.OrderedList : ParserNodeType.UnorderedList,
                         children: [],
