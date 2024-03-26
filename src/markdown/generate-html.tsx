@@ -3,10 +3,10 @@ import { Typography, Divider, Alert } from 'antd';
 
 interface Props {
     node: ParseAST;
-    key?: number | string;
+    keyValue?: number | string;
 }
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph, Text, Link } = Typography;
 
 /** 生成标题 */
 function Heading({ node }: Props) {
@@ -33,16 +33,16 @@ function ListItem({ node }: Props) {
 /** 引用段落显示 */
 function Blockquote({ node }: Props) {
     const message = node.children?.map((item, index) => (
-        <>
-            <ParagraphContent key={index} node={item} />
+        <div key={index}>
+            <ParagraphContent keyValue={index + 'key'} node={item} />
             { index === node.children!.length - 1 ? null : <br />}
-        </>
+        </div>
     ));
-    return <Alert key="info" message={message} type="info" />
+    return <Alert key="1info" message={message} type="info" />
 }
 
 /** 生成段落 */
-function ParagraphContent({ node, key }: Props) {
+function ParagraphContent({ node, keyValue }: Props) {
     if (!node.content) {
         return null;
     }
@@ -55,6 +55,18 @@ function ParagraphContent({ node, key }: Props) {
         }
         if (item.type === ParserNodeType.Text) {
             return <span key={index}>{content}</span>
+        }
+
+        if (item.type === ParserNodeType.Link) {
+            return (
+                <Link
+                    key={index}
+                    href={item.href}
+                    title={item.title}
+                    target='_blank'>
+                    {content}
+                </Link>
+            )
         }
 
         return <Text
@@ -71,7 +83,7 @@ function ParagraphContent({ node, key }: Props) {
             {
                 node.children!.length > 0
                     ? node.children!.map(getContent)
-                    : <span key={key}>{node.content}</span>
+                    : <span key={keyValue}>{node.content}</span>
             }
         </>
     );

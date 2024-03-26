@@ -17,6 +17,7 @@ export enum ParserNodeType {
     Delete = 'delete',
     HorizontalRule = 'horizontalRule',
     Blockquote = 'blockquote',
+    Link = 'link',
 }
 
 export interface ParseAST {
@@ -25,6 +26,8 @@ export interface ParseAST {
     content?: string;
     ordered?: boolean;
     level?: TitleLevel;
+    href?: string;
+    title?: string;
 }
 
 export function parse(tokens: Token[]) {
@@ -128,6 +131,10 @@ function parseParagraph<T extends ParagraphToken>(token: T, type: ParserNodeType
         result.children = splitToAST(result.children!, token.italic, ParserNodeType.Italic);
     }
 
+    if (token.link?.length) {
+        result.children = splitToAST(result.children!, token.link, ParserNodeType.Link);
+    }
+
     return result;
 }
 
@@ -160,8 +167,9 @@ function splitToAST(rootChildren: ParseAST[], tokenList: InlineToken[], type: Pa
 
             // 将匹配上的数据放入数组
             result.push({
+                ...item,
                 type,
-                content: item.content
+                content: item.content,
             })
 
             // 切掉之前匹配上的数据，重新走流程

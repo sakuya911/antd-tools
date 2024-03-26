@@ -23,7 +23,13 @@ interface DeleteToken extends ExtraTokenBase {
     type: MarkdownElement.Delete;
 }
 
-export type InlineToken = BoldToken | ItalicToken | InlineCodeToken | DeleteToken;
+interface LinkToken extends ExtraTokenBase {
+    type: MarkdownElement.Link;
+    href?: string;
+    title?: string;
+}
+
+export type InlineToken = BoldToken | ItalicToken | InlineCodeToken | DeleteToken | LinkToken;
 
 // 额外的格式
 interface ExtraToken {
@@ -35,6 +41,8 @@ interface ExtraToken {
     inlineCode?: InlineToken[];
     /** 删除线 */
     delete?: InlineToken[];
+    /** 链接 */
+    link?: InlineToken[];
 }
 
 /** 段落 */

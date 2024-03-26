@@ -38,6 +38,7 @@ export function tokenize(markdownText: string) {
                 italic: matchItalicText(trimLine),
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
+                link: matchLink(trimLine),
             });
         } else if (trimLine.match(markdownRegex.orderedList)) {
             // 创建有序列表的 token
@@ -49,6 +50,7 @@ export function tokenize(markdownText: string) {
                 italic: matchItalicText(trimLine),
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
+                link: matchLink(trimLine),
             });
         } else if (trimLine.match(markdownRegex.horizontalRule)) {
             // 分割线
@@ -65,6 +67,7 @@ export function tokenize(markdownText: string) {
                 italic: matchItalicText(trimLine),
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
+                link: matchLink(trimLine),
             });
         } else if (trimLine !== '') {
             // 如果该行不是空行，则视为段落
@@ -75,6 +78,7 @@ export function tokenize(markdownText: string) {
                 italic: matchItalicText(trimLine),
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
+                link: matchLink(trimLine),
             });
         }
     }
@@ -113,6 +117,29 @@ function matchText(text: string, regex: RegExp, type: InlineToken['type']) {
             type: type,
             content: match[1] || match[2],
             match: match[0]
+        });
+    }
+
+    return list;
+}
+
+/** 匹配行内链接，需要带其他数据，所以单独拿出一个函数 */
+function matchLink(text: string) {
+    const list: InlineToken[] = [];
+    const matchs = text.matchAll(markdownRegex.link);
+
+    for (const match of matchs) {
+        // href中可能带有标题
+        const hrefMatch = match[2];
+        // 单独匹配上标题
+        const titleMatch = hrefMatch.match(/^([^"]*)\s*"([^"]*)"$/);
+
+        list.push({
+            type: MarkdownElement.Link,
+            content: match[1],
+            match: match[0],
+            href: titleMatch?.[1].trim() ?? hrefMatch.trim(),
+            title: titleMatch?.[2] ?? ''
         });
     }
 
