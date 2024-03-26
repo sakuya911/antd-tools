@@ -28,6 +28,19 @@ export function tokenize(markdownText: string) {
                 delete: matchDeleteText(trimLine),
                 inlineCode: matchInlineCodeText(trimLine),
             });
+        } else if (trimLine.match(markdownRegex.taskList)) {
+            // 1 -, 2 ' ' 或 'x', 3 内容
+            const match = markdownRegex.taskList.exec(trimLine);
+            const content = match?.[3].trim() ?? '';
+            tokens.push({
+                type: MarkdownElement.TaskList,
+                content,
+                checked: match?.[2].trim() === 'x',
+                bold: matchBoldText(content),
+                italic: matchItalicText(content),
+                delete: matchDeleteText(content),
+                inlineCode: matchInlineCodeText(content),
+            });
         } else if (trimLine.match(markdownRegex.unorderedList)) {
             // 创建无序列表的 token
             tokens.push({
@@ -69,6 +82,13 @@ export function tokenize(markdownText: string) {
                 inlineCode: matchInlineCodeText(trimLine),
                 link: matchLink(trimLine),
             });
+        } else if (trimLine.match(markdownRegex.image)) {
+            const match = markdownRegex.image.exec(trimLine);
+            tokens.push({
+                type: MarkdownElement.Image,
+                content: match?.[2].trim() ?? '',
+                title: match?.[1].trim() ?? ''
+            })
         } else if (trimLine !== '') {
             // 如果该行不是空行，则视为段落
             tokens.push({

@@ -1,5 +1,5 @@
 import { ParserNodeType, type ParseAST } from './parse';
-import { Typography, Divider, Alert } from 'antd';
+import { Typography, Divider, Alert, Image, Checkbox, Col, Row } from 'antd';
 
 interface Props {
     node: ParseAST;
@@ -30,6 +30,18 @@ function ListItem({ node }: Props) {
     return <li>{node.content}</li>;
 }
 
+/** 任务列表 */
+function TaskList({ node }: Props) {
+    const child = node.children?.map((item, index) => (
+        <Col key={index} span={24}>
+            <Checkbox value={node.content} disabled={item.checked} checked={item.checked}>
+                <ParagraphContent keyValue={index + 'key'} node={item} />
+            </Checkbox>
+        </Col>
+    ));
+    return <div className='mb-3'><Row>{child}</Row></div>
+}
+
 /** 引用段落显示 */
 function Blockquote({ node }: Props) {
     const message = node.children?.map((item, index) => (
@@ -38,7 +50,7 @@ function Blockquote({ node }: Props) {
             { index === node.children!.length - 1 ? null : <br />}
         </div>
     ));
-    return <Alert key="1info" message={message} type="info" />
+    return <Alert className='mb-3' key="1info" message={message} type="info" />
 }
 
 /** 生成段落 */
@@ -104,12 +116,18 @@ export default function GenerateHtml({ node }: Props) {
         case ParserNodeType.OrderedList:
         case ParserNodeType.UnorderedList:
             return <Paragraph><ListItem node={node} /></Paragraph>;
+        case ParserNodeType.TaskList:
+            return <TaskList node={node}/>;
         case ParserNodeType.Paragraph:
             return <Paragraph><ParagraphContent node={node} /></Paragraph>;
         case ParserNodeType.HorizontalRule:
             return <Divider style={{ borderBlockStart: '1px solid rgba(5, 5, 5, 0.3)' }}/>
         case ParserNodeType.Blockquote:
             return <Blockquote node={node} />;
+        case ParserNodeType.Image:
+            return <div className='mb-3'>
+                <Image src={node.content!} alt={node.title} width={'100%'} height={'100%'} />
+            </div>;
         default:
             return null;
     }

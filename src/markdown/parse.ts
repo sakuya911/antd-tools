@@ -18,6 +18,8 @@ export enum ParserNodeType {
     HorizontalRule = 'horizontalRule',
     Blockquote = 'blockquote',
     Link = 'link',
+    Image = 'image',
+    TaskList = 'taskList',
 }
 
 export interface ParseAST {
@@ -28,6 +30,7 @@ export interface ParseAST {
     level?: TitleLevel;
     href?: string;
     title?: string;
+    checked?: boolean;
 }
 
 export function parse(tokens: Token[]) {
@@ -43,6 +46,12 @@ export function parse(tokens: Token[]) {
     // 遍历所有的token
     tokens.forEach((token) => {
         switch (token.type) {
+            case MarkdownElement.Image:
+                ast.children?.push({
+                    ...token,
+                    type: ParserNodeType.Image,
+                })
+                break;
             case MarkdownElement.HorizontalRule:
                 currentList = null;
                 ast.children!.push({
@@ -94,19 +103,31 @@ export function parse(tokens: Token[]) {
                     type: MarkdownElement.Paragraph,
                 }));
                 break;
+            case MarkdownElement.TaskList:
+                // 任务列表
+                if (!currentList || currentList.type !== ParserNodeType.TaskList) {
+                    currentList = {
+                        type: ParserNodeType.TaskList,
+                        children: [],
+                    };
+                    ast.children!.push(currentList);
+                }
+                currentList.children!.push(parseParagraph({
+                    ...token,
+                    type: MarkdownElement.Paragraph,
+                }));
+                break;
             default:
                 break;
         }
     });
-
-    console.log('parse', ast);
-
     return ast;
 }
 
 /** 解析段落 */
 function parseParagraph<T extends ParagraphToken>(token: T, type: ParserNodeType = ParserNodeType.Paragraph) {
     const result: ParseAST = {
+        ...token,
         type,
         content: token.content ?? '',
         children: [{

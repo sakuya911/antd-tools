@@ -9,6 +9,8 @@ export enum MarkdownElement {
     HorizontalRule = 'horizontalRule',
     Blockquote = 'blockquote',
     Link = 'link',
+    Image = 'image',
+    TaskList = 'taskList',
 }
 
 /** 将markdown的正则全部写到一起 */
@@ -26,4 +28,8 @@ export const markdownRegex = {
     blockquote: /^>(?:\s.*)$/gm,
     // 链接文字
     link: /\[([^\]]*)\]\(([^)]*)\)/g,
+    // 图片
+    image: /!\[(.*?)\]\((.*?)\)/g,
+    // 任务列表
+    taskList: /^(-|\*) \[( |x)\] (.*)$/gm,
 }

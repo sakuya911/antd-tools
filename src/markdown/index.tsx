@@ -38,7 +38,17 @@ const textDemo = `
 
 [不带标题的链接文字，链接到百度](https://www.baidu.com)
 
+这是第六个段落
+
+![图片](https://p4.itc.cn/q_70/images03/20230512/32c7ad09b5904bea8506d74f96483000.png)
+
 > 这是第二段引用
+
+- [x] 任务列表1已完成
+- [ ] 任务~~列表2~~
+- [ ] 任务列表31**加粗**
+
+这是第七个段落
 
 `;
 
@@ -85,7 +95,10 @@ export default function MarkdownToHtml() {
                 </div>
                 <Typography className="w-full p-2 text-left border
                 border-stone-300 border-solid rounded"
-                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
+                    style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        overflow: 'auto',
+                    }}>
                     <GenerateHtml node={ast} />
                 </Typography>
             </div>

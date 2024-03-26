@@ -72,4 +72,15 @@ interface HorizontalRuleToken {
     type: MarkdownElement.HorizontalRule;
 }
 
-export type Token = ParagraphToken | ListItemToken | HeadingToken | BlockquoteToken | HorizontalRuleToken;
+/** 任务列表 */
+interface TaskListToken extends ParagraphToken {
+    type: MarkdownElement.TaskList;
+    checked: boolean;
+}
+interface ImageToken {
+    type: MarkdownElement.Image;
+    content: string;
+    title?: string;
+}
+
+export type Token = ParagraphToken | ListItemToken | HeadingToken | BlockquoteToken | HorizontalRuleToken | ImageToken | TaskListToken;
