@@ -1,4 +1,5 @@
-import { ParserNodeType, type ParseAST } from './parse';
+import type { ParseAST } from './parse';
+import { MarkdownElement, ParseNodeRoot } from './const';
 import { Typography, Divider, Alert, Image, Checkbox, Col, Row } from 'antd';
 
 interface Props {
@@ -15,19 +16,18 @@ function Heading({ node }: Props) {
 
 /** 生成列表 */
 function ListItem({ node }: Props) {
-    if (node.type !== ParserNodeType.ListItem) {
-        const child = node.children?.map((item, index) => <ListItem key={index} node={item} />)
-        return (
-            <>
-                {
-                    node.ordered
-                        ? <ol>{child}</ol>
-                        : <ul>{child}</ul>
-                }
-            </>
-        )
-    }
-    return <li>{node.content}</li>;
+    const child = node.children?.map((item, index) => {
+        return <li key={index}><ParagraphContent keyValue={index + 'key'} node={item} /></li>
+    });
+    return (
+        <>
+            {
+                node.ordered
+                    ? <ol>{child}</ol>
+                    : <ul>{child}</ul>
+            }
+        </>
+    )
 }
 
 /** 任务列表 */
@@ -65,11 +65,11 @@ function ParagraphContent({ node, keyValue }: Props) {
         if (!content) {
             return null;
         }
-        if (item.type === ParserNodeType.Text) {
+        if (item.type === MarkdownElement.Text) {
             return <span key={index}>{content}</span>
         }
 
-        if (item.type === ParserNodeType.Link) {
+        if (item.type === MarkdownElement.Link) {
             return (
                 <Link
                     key={index}
@@ -83,10 +83,10 @@ function ParagraphContent({ node, keyValue }: Props) {
 
         return <Text
                 key={index}
-                strong={item.type === ParserNodeType.Bold}
-                italic={item.type === ParserNodeType.Italic}
-                code={item.type === ParserNodeType.InlineCode}
-                delete={item.type === ParserNodeType.Delete}>
+                strong={item.type === MarkdownElement.Bold}
+                italic={item.type === MarkdownElement.Italic}
+                code={item.type === MarkdownElement.InlineCode}
+                delete={item.type === MarkdownElement.Delete}>
                     {content}
                 </Text>
     }
@@ -102,7 +102,7 @@ function ParagraphContent({ node, keyValue }: Props) {
 }
 
 export default function GenerateHtml({ node }: Props) {
-    if (node.type === ParserNodeType.Root) {
+    if (node.type === ParseNodeRoot) {
         return (
             <>
                 {node.children?.map((child, index) => <GenerateHtml key={index} node={child} />)}
@@ -111,20 +111,20 @@ export default function GenerateHtml({ node }: Props) {
     }
 
     switch (node.type) {
-        case ParserNodeType.Heading:
+        case MarkdownElement.Heading:
             return <Heading node={node} />;
-        case ParserNodeType.OrderedList:
-        case ParserNodeType.UnorderedList:
+        case MarkdownElement.OrderedList:
+        case MarkdownElement.UnorderedList:
             return <Paragraph><ListItem node={node} /></Paragraph>;
-        case ParserNodeType.TaskList:
+        case MarkdownElement.TaskList:
             return <TaskList node={node}/>;
-        case ParserNodeType.Paragraph:
+        case MarkdownElement.Paragraph:
             return <Paragraph><ParagraphContent node={node} /></Paragraph>;
-        case ParserNodeType.HorizontalRule:
+        case MarkdownElement.HorizontalRule:
             return <Divider style={{ borderBlockStart: '1px solid rgba(5, 5, 5, 0.3)' }}/>
-        case ParserNodeType.Blockquote:
+        case MarkdownElement.Blockquote:
             return <Blockquote node={node} />;
-        case ParserNodeType.Image:
+        case MarkdownElement.Image:
             return <div className='mb-3'>
                 <Image src={node.content!} alt={node.title} width={'100%'} height={'100%'} />
             </div>;

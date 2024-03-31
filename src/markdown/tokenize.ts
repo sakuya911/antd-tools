@@ -18,7 +18,7 @@ export function tokenize(markdownText: string) {
         // 判断是否是标题
         if (trimLine.match(markdownRegex.heading)) {
             // 获取标题的级别
-            const level = (trimLine.match(markdownRegex.heading)?.[0].trim().length || 5) as TitleLevel;
+            const level = (trimLine.match(markdownRegex.heading)?.[0].trim().length || 6) as TitleLevel;
             // 创建标题的 token
             tokens.push({
                 type: MarkdownElement.Heading,
@@ -72,7 +72,7 @@ export function tokenize(markdownText: string) {
             });
         } else if (trimLine.match(markdownRegex.blockquote)) {
             const replace = trimLine.replace('> ', '');
-            // 分割线
+            // 引用
             tokens.push({
                 type: MarkdownElement.Blockquote,
                 content: replace,
