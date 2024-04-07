@@ -1,7 +1,7 @@
 // 该文件根据传入的 tokens 列表生成抽象语法树
 
-import type { InlineToken, ParagraphToken, TitleLevel, Token } from './type';
-import { MarkdownElement, ParseNodeRoot } from './const';
+import type { InlineToken, ParagraphToken, TitleLevel, Token } from '../type';
+import { MarkdownElement, ParseNodeRoot } from '../const';
 
 export interface ParseAST {
     type: MarkdownElement | typeof ParseNodeRoot;

@@ -1,56 +1,12 @@
-import { tokenize } from "./tokenize";
-import { parse } from './parse';
-import GenerateHtml from './generate-html';
+import { tokenize } from "./utils/tokenize";
+import { parse } from './utils/parse';
+import GenerateHtml from './components/generate-html';
 import { Input, Typography } from 'antd';
 import { useState } from "react";
 import MarkdownBg from './img/markdown.jpg';
+import { textDemo } from "./const";
 
 const { TextArea } = Input;
-
-const textDemo = `
-# 标题
-
-这是**一个**段落，**这是一个加粗字体**，这也是__加粗的方式__
-
-- 无序列表项 1
-- 无序列表项 2
-- 无序列表项 3
-
----
-
-这是第*二个*段落，*这是一个斜体*，这也是_斜体_的写法
-
-1. 有序列表项 1
-2. 有序列表项 2
-3. 有序列表项 3
-
----
-
-这是第~~三个~~段落，~~这是一个删除线~~
-
-这是第\`四个\`段落，\`const inlineCode = "这是一个行内代码";\`
-
-> 段**落**1
-> 段落2
-> 段\`落\`3
-
-这是第五个段落，内部有[链接文字，链接到百度](https://www.baidu.com "标题")，没想到吧！
-
-[不带标题的链接文字，链接到百度](https://www.baidu.com)
-
-这是第六个段落
-
-![图片](https://p4.itc.cn/q_70/images03/20230512/32c7ad09b5904bea8506d74f96483000.png)
-
-> 这是第二段引用
-
-- [x] 任务列表1已完成
-- [ ] 任务~~列表2~~
-- [ ] 任务列表31**加粗**
-
-这是第七个段落
-
-`;
 
 function MarkdownInput({ onChange, defaultValue }: {
     onChange: (value: string) => void;

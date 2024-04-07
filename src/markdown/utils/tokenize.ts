@@ -2,8 +2,8 @@
  * @file
  * 主要负责分词操作
  */
-import type { InlineToken, TitleLevel, Token } from "./type";
-import { MarkdownElement, markdownRegex } from "./const";
+import type { InlineToken, TitleLevel, Token } from "../type";
+import { MarkdownElement, markdownRegex } from "../const";
 
 export function tokenize(markdownText: string) {
     // 将获取到的markdown文本按照行来分割

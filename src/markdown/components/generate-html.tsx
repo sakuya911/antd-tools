@@ -1,5 +1,5 @@
-import type { ParseAST } from './parse';
-import { MarkdownElement, ParseNodeRoot } from './const';
+import type { ParseAST } from '../utils/parse';
+import { MarkdownElement, ParseNodeRoot } from '../const';
 import { Typography, Divider, Alert, Image, Checkbox, Col, Row } from 'antd';
 
 interface Props {
