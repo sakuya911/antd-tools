@@ -6,9 +6,40 @@ import type { InlineToken, TitleLevel, Token } from "../type";
 import { MarkdownElement, markdownRegex } from "../const";
 
 export function tokenize(markdownText: string) {
-    // 将获取到的markdown文本按照行来分割
-    const lines = markdownText.split('\n');
+    // 获取内容头部的主题参数
+    const themesList = markdownText?.match(/^---\n([\s\S]*?)\n---/)?.[1]?.split('\n');
+    const themes = themesList?.find(one => /^[^:]*theme\:[\s\S]*/.test(one));
+    const theme = themes?.split(':')[1]?.trim();
+    // 修改内容时主题与之前相同时不进行主题样式文件处理，防抖
+    if (window.sessionStorage.getItem('nowTheme') !== theme) {
+        // 先判断head标签中有无已读取的主题样式文件，若有则删除
+        const docHead = document.head;
+        const linkList = document.getElementsByTagName('link');
+        if (linkList) {
+            for (let i = 0; i < linkList.length; i++) {
+                if (linkList[i].getAttribute('title') === 'nowTheme') {
+                    docHead.removeChild(linkList[i]);
+                }
+            }
+        }
+        // 如果存在主题，读取相关主题文件
+        if (theme) {
+            // 读取相应主题样式文件
+            const stylePath = `../src/styleThemes/${theme}.scss`;
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.title = 'nowTheme';
+            link.href = stylePath;
+            document.head.appendChild(link);
+            window.sessionStorage.setItem('nowTheme', theme);
+        }
+    }
+    let str = '';
+    str = markdownText.replace(/^---\n([\s\S]*?)\n---/, ''); // 清空主题相关文字再传内容至后续代码
 
+    // 将获取到的markdown文本按照行来分割
+    const lines = str ? str.split('\n') : markdownText.split('\n');
     // 用于存储解析出来的token
     const tokens: Token[] = [];
     // 遍历每一行
