@@ -8,7 +8,7 @@ import { MarkdownElement, markdownRegex } from "../const";
 export function tokenize(markdownText: string) {
     // 获取内容头部的主题参数
     const themesList = markdownText?.match(/^---\n([\s\S]*?)\n---/)?.[1]?.split('\n');
-    const themes = themesList?.find(one => /^[^:]*theme\:[\s\S]*/.test(one));
+    const themes = themesList?.find(one => /^[^:]*theme:[\s\S]*/.test(one));
     const theme = themes?.split(':')[1]?.trim();
     // 修改内容时主题与之前相同时不进行主题样式文件处理，防抖
     if (window.sessionStorage.getItem('nowTheme') !== theme) {

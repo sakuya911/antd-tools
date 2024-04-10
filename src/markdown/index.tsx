@@ -39,7 +39,7 @@ function MarkdownInput({
 }
 
 export default function MarkdownToHtml() {
-    let [markdownText, setMarkdownText] = useState(textDemo);
+    const [markdownText, setMarkdownText] = useState(textDemo);
     const items: MenuProps["items"] = [
         { key: "default", label: "默认主题" },
         { key: "juejin", label: "juejin" },
@@ -80,7 +80,7 @@ export default function MarkdownToHtml() {
             ?.match(/^---\n([\s\S]*?)\n---/)?.[1]
             ?.split("\n");
         const themes = themesList?.find((one) =>
-            /^[^:]*theme\:[\s\S]*/.test(one)
+            /^[^:]*theme:[\s\S]*/.test(one)
         );
         const theme = themes?.split(":")[1]?.trim();
         // 如果已有主题，替换旧主题文字
@@ -93,8 +93,8 @@ export default function MarkdownToHtml() {
             );
         } else {
             // 新主题加入markdown内容主体
-            let themeString = `---\ntheme: ${key}\n---`;
-            let newMarkdownText = themeString + markdownText;
+            const themeString = `---\ntheme: ${key}\n---`;
+            const newMarkdownText = themeString + markdownText;
             setMarkdownText(newMarkdownText);
         }
     };
