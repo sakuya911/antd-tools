@@ -4,7 +4,7 @@
  */
 
 import { markdownRegex } from "../const";
-import { useCallback, useEffect, useRef } from 'React';
+import { useCallback, useEffect, useRef } from 'react';
 
 const useThemeHook = (markdownText: string) => {
   const theme = useRef('default');
