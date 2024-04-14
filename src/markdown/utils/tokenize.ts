@@ -6,9 +6,11 @@ import type { InlineToken, TitleLevel, Token } from "../type";
 import { MarkdownElement, markdownRegex } from "../const";
 
 export function tokenize(markdownText: string) {
-    // 将获取到的markdown文本按照行来分割
-    const lines = markdownText.split('\n');
+    let str = '';
+    str = markdownText.replace(markdownRegex.themeArea, ''); // 清空主题相关文字再传内容至后续代码
 
+    // 将获取到的markdown文本按照行来分割
+    const lines = str ? str.split('\n') : markdownText.split('\n');
     // 用于存储解析出来的token
     const tokens: Token[] = [];
     // 遍历每一行

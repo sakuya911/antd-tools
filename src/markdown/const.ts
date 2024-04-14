@@ -43,6 +43,10 @@ export const markdownRegex = {
     image: /!\[(.*?)\]\((.*?)\)/g,
     // 任务列表
     taskList: /^(-|\*) \[( |x)\] (.*)$/,
+    // 主题部分
+    themeArea: /^---\n([\s\S]*?)\n---/,
+    // 主题文字
+    themeText: /^[^:]*theme:[\s\S]*/,
 }
 
 
